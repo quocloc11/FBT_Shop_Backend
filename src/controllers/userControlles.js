@@ -1,7 +1,9 @@
 import { helloServices } from "../services/helloServices.js"
 import { userServices } from "../services/userServices.js"
 import { StatusCodes } from 'http-status-codes'
+
 import ms from 'ms'
+import ApiError from "../utils/ApiError.js"
 const login = async (req, res, next) => {
   try {
     const result = await userServices.login(req.body)
@@ -75,6 +77,50 @@ const logout = async (req, res, next) => {
 
   }
 }
+const update = async (req, res, next) => {
+  try {
+    const userId = req.jwtDecoded._id
+    const userAvatarFile = req.file
+    console.log('userAvarFile', userAvatarFile)
+    const updatedUser = await userServices.update(userId, req.body, userAvatarFile)
+    res.status(StatusCodes.OK).json(updatedUser)
+  } catch (error) {
+    next(error)
+
+  }
+}
+
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await userServices.getAllUsers()
+    res.status(StatusCodes.OK).json(users)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const editUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id
+    const userAvatarFile = req.file
+    const updatedUser = await userServices.updateUser(userId, req.body, userAvatarFile)
+    res.status(StatusCodes.OK).json(updatedUser)
+  } catch (error) {
+    next(error)
+  }
+}
+const deleteUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id
+    await userServices.deleteUser(userId)
+    res.status(StatusCodes.OK).json({ message: 'User deleted successfully.' })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
 export const userController = {
-  login, register, refreshToken, logout
+  login, register, refreshToken, logout, update, getAllUsers,
+  editUser, deleteUser
 }

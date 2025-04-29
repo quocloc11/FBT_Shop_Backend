@@ -3,6 +3,10 @@ import { productController } from '../controllers/productController.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { multerUploadMiddlere } from '../middlewares/multerUploadMiddleware.js'
 
+
+
+
+
 // GET	Lấy dữ liệu từ server
 // POST	Gửi dữ liệu mới lên server   POST được sử dụng khi tạo tài nguyên mới trên server.
 // PUT	Cập nhật toàn bộ dữ liệu trên server

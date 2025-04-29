@@ -2,6 +2,11 @@ import express from 'express'
 import { helloRoute } from './helloRoute.js'
 import { userRoute } from './userRoutes.js'
 import { productRoute } from './productRoutes.js'
+import { flashSaleRoute } from './flashSaleRoute.js'
+import { viewProductRoute } from './viewedProductRoute.js'
+import { cartRoute } from './cartRoutes.js'
+import { orderRoute } from './OrderRoutes.js'
+import { commentRoute } from './commentRoutes.js'
 
 
 const Router = express.Router()
@@ -13,6 +18,11 @@ Router.get('/status', (req, res) => {
 Router.use('/', helloRoute)
 Router.use('/users', userRoute)
 Router.use('/', productRoute)
+Router.use('/api', flashSaleRoute)
+Router.use('/', viewProductRoute)
+Router.use('/', cartRoute)
+Router.use('/', orderRoute)
+Router.use('/', commentRoute)
 
 //module.exports = { APIs: Router };
 export const APIs = Router

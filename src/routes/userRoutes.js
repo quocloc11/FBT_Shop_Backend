@@ -3,6 +3,7 @@ import { helloController } from "../controllers/helloController.js";
 import { userValidation } from '../validations/userValidation.js';
 import { userController } from '../controllers/userControlles.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { multerUploadMiddlere } from '../middlewares/multerUploadMiddleware.js';
 
 
 
@@ -22,7 +23,12 @@ Router.route('/register')
 
 Router.route('/logout')
   .delete(userController.logout)
-
+Router.route('/update')
+  .put(
+    authMiddleware.isAuthorized,
+    multerUploadMiddlere.upload.single('avatar'),
+    userValidation.update,
+    userController.update)
 
 Router.route('/refresh_token')
   .get(userController.refreshToken)
@@ -31,5 +37,23 @@ Router.route('/refresh_token')
 Router.get('/dashboard', authMiddleware.isAuthorized, authMiddleware.isAdmin, (req, res) => {
   res.status(200).json({ message: 'Welcome to Admin Dashboard' })
 })
+
+Router.route('/users')
+  .get(authMiddleware.isAuthorized, userController.getAllUsers);
+
+Router.route('/users/:id')
+  .patch(
+    authMiddleware.isAuthorized,
+    multerUploadMiddlere.upload.single('avatar'),
+    userController.editUser
+  )
+
+Router.route('/users/:id')
+  .delete(
+    authMiddleware.isAuthorized,
+    userController.deleteUser
+  )
+
+
 export const userRoute = Router
 

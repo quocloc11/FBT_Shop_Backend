@@ -1,18 +1,45 @@
 import { productModel } from "../models/productModel.js"
 import { ObjectId } from "mongodb";
+import { CloudinaryProvider } from "../provider/CloudinaryProvider.js";
+import ApiError from '../utils/ApiError.js'
+import { StatusCodes } from 'http-status-codes'
+import { pickUser } from '../utils/formatters.js'
+// const createAProduct = async (reqBody) => {
+//   try {
+//     const newProduct = {
+//       ...reqBody
+//     }
+//     const createdUser = await productModel.createAProduct(newProduct)
+//     return createdUser
+//   } catch (error) {
+//     throw error
+//   }
+// }
 
-
-const createAProduct = async (reqBody) => {
+const createAProduct = async (reqBody, userAvarFile) => {
   try {
-    const newProduct = {
-      ...reqBody
+    let imageUrl = null;
+
+    if (userAvarFile) {
+      const uploadResult = await CloudinaryProvider.streamUpload(userAvarFile.buffer, 'products');
+      console.log('uploadResult', uploadResult);
+      imageUrl = uploadResult.url;
     }
-    const createdUser = await productModel.createAProduct(newProduct)
-    return createdUser
+
+    // Thêm image vào reqBody nếu có
+    if (imageUrl) {
+      reqBody.images = imageUrl;
+    }
+
+    const createdProduct = await productModel.createAProduct(reqBody);
+    console.log('createdProduct', createdProduct);
+
+    return createdProduct; // hoặc dùng hàm pickProduct nếu bạn có
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
+
 const getProduct = async (reqBody) => {
   try {
     const listProduct = await productModel.getProduct()
@@ -21,18 +48,30 @@ const getProduct = async (reqBody) => {
     throw error
   }
 }
-const updateAProduct = async (id, reqBody) => {
+const updateAProduct = async (id, reqBody, imageFiles) => {
   try {
-    const newProduct = {
-      ...reqBody,
-      updatedAt: Date.now()
+    const updateData = { ...reqBody }; // khởi tạo dữ liệu update từ req.body
+
+    if (imageFiles && imageFiles.length > 0) {
+      const uploadedImages = [];
+
+      for (const file of imageFiles) {
+        const result = await CloudinaryProvider.streamUpload(file.buffer, 'products');
+        uploadedImages.push(result.secure_url);
+      }
+
+      updateData.images = uploadedImages; // thêm mảng ảnh vào dữ liệu update
     }
-    const updateUser = await productModel.updateAProduct(id, newProduct)
-    return updateUser
+
+    const updatedProduct = await productModel.updateAProduct(id, updateData);
+    console.log('updatedProduct', updatedProduct);
+    return updatedProduct;
+
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
+
 const deleteAProduct = async (idProduct) => {
   console.log('idProduct', idProduct)
   try {
