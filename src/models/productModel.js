@@ -52,55 +52,17 @@ const PRODUCT = Joi.object({
 
   // Trạng thái bị xóa, mặc định là false
   _destroy: Joi.boolean().default(false),
+  //flaseSale: Joi.boolean().required(), // Trường falseSale phải là boolean
 
 
-  // flashSale: Joi.object({
-  //   isActive: Joi.boolean().default(false),
-  //   discountPercent: Joi.number().min(0).max(100),
-  //   startTime: Joi.date().timestamp('javascript'),
-  //   endTime: Joi.date().timestamp('javascript')
-  // }).optional(),
-  // gifts: Joi.array().items(Joi.string()).optional(),
-  // badges: Joi.array().items(
-  //   Joi.string().valid('new', 'hot', 'exclusive', 'installment', 'bestseller', 'limited')
-  // ).optional(),
-  // comboProducts: Joi.array().items(Joi.string()).optional(),
-  // warranty: Joi.object({
-  //   durationMonths: Joi.number().optional(),
-  //   type: Joi.string().valid('official', 'store', 'none')
-  // }).optional(),
-  // isFeatured: Joi.boolean().default(false),
-  // isBestSeller: Joi.boolean().default(false),
-  // isNewArrival: Joi.boolean().default(false),
-  // isOnSale: Joi.boolean().default(false),
-  // isFavorite: Joi.boolean().default(false),
-  // isComparable: Joi.boolean().default(true),
-  // isReviewable: Joi.boolean().default(true),
-  // isShareable: Joi.boolean().default(true),
-  // isContactable: Joi.boolean().default(true),
-  // isOrderable: Joi.boolean().default(true),
-  // isPayable: Joi.boolean().default(true),
-  // isShippable: Joi.boolean().default(true),
-  // isReturnable: Joi.boolean().default(true),
-  // isWarranty: Joi.boolean().default(true),
-  // isSupport: Joi.boolean().default(true),
-  // isReview: Joi.boolean().default(true),
-  // isContact: Joi.boolean().default(true),
-  // isShare: Joi.boolean().default(true),
-  // isCompare: Joi.boolean().default(true),
-  // isFavorite: Joi.boolean().default(true),
-  // isNew: Joi.boolean().default(false),
-  // isBestSeller: Joi.boolean().default(false),
-  // isOnSale: Joi.boolean().default(false),
-  // isFeatured: Joi.boolean().default(false),
-  // isPromotion: Joi.boolean().default(false),
-  // isFlashSale: Joi.boolean().default(false),
-  // isCombo: Joi.boolean().default(false),
-  // isGift: Joi.boolean().default(false),
-  // isVoucher: Joi.boolean().default(false),
-  // isCoupon: Joi.boolean().default(false),
-  // isDiscountCode: Joi.boolean().default(false),
-  // isPromotionCode: Joi.boolean().default(false),
+
+  flashSale: Joi.object({
+    isActive: Joi.boolean().default(false),
+    saleStart: Joi.date().timestamp('javascript').required(),
+    saleEnd: Joi.date().timestamp('javascript').required(),
+    discountPercent: Joi.number().min(0).max(100),
+    quantity: Joi.number().min(0)
+  }).optional(),
 
 });
 
@@ -163,17 +125,108 @@ const findOneById = async (Id) => {
 }
 
 
-const getProduct = async () => {
+// const getProduct = async () => {
+//   try {
+//     const products = await GET_DB().collection("products")
+//       .find({}, {
+//         projection: {
+//           _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
+//           description: 1,
+//           specs: 1, video: 1,
+//           promotion: 1, images: 1, brand: 1,
+//           flashSale: 1,     // Kiểm tra trường flashSale có trong cơ sở dữ liệu
+//           saleStart: 1,     // Thay saleStart thay cho startTime
+//           saleEnd: 1
+//         }
+//       })
+//       .toArray();
+//     if (!products) throw new Error("Product not found");
+//     return products;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+// const getProduct = async (page, limit) => {
+//   try {
+//     const collection = GET_DB().collection("products");
+
+//     const query = {};
+//     const projection = {
+//       _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
+//       description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
+//       flashSale: 1, saleStart: 1, saleEnd: 1
+//     };
+
+//     const totalItems = await collection.countDocuments(query);
+
+//     let cursor = collection.find(query, { projection });
+
+//     // Nếu có page và limit thì áp dụng phân trang
+//     if (page && limit) {
+//       const skip = (page - 1) * limit;
+//       cursor = cursor.skip(skip).limit(limit);
+
+//       const products = await cursor.toArray();
+
+//       return {
+//         currentPage: page,
+//         totalPages: Math.ceil(totalItems / limit),
+//         totalItems,
+//         products
+//       };
+//     }
+
+//     // Nếu không có phân trang, trả về toàn bộ
+//     const allProducts = await cursor.toArray();
+//     return {
+//       totalItems,
+//       products: allProducts
+//     };
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+const getProduct = async (page, limit, category) => {
   try {
-    const products = await GET_DB().collection("products")
-      .find({}, { projection: { _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1, description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1 } })
-      .toArray();
-    if (!products) throw new Error("Product not found");
-    return products;
+    const collection = GET_DB().collection("products");
+
+    const query = category ? { category } : {}; // ← nếu có category thì lọc
+
+    const projection = {
+      _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
+      description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
+      flashSale: 1, saleStart: 1, saleEnd: 1
+    };
+
+    const totalItems = await collection.countDocuments(query);
+
+    let cursor = collection.find(query, { projection });
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      cursor = cursor.skip(skip).limit(limit);
+
+      const products = await cursor.toArray();
+
+      return {
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        totalItems,
+        products
+      };
+    }
+
+    const allProducts = await cursor.toArray();
+    return {
+      totalItems,
+      products: allProducts
+    };
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 const updateAProduct = async (id, data) => {
   console.log(data)
   try {
@@ -198,9 +251,60 @@ const deleteAProduct = async (id) => {
     throw new Error(error)
   }
 }
+const updateFalseSaleStatus = async (productId, flashSale, startDate, endDate) => {
+  try {
+    // Cập nhật trường "falseSale" trong cơ sở dữ liệu
+    const result = await GET_DB()
+      .collection("products")
+      .findOneAndUpdate(
+        { _id: new ObjectId(productId) },
+        // { $set: { flashSale: flashSale } }, // Thay đổi trạng thái flashSale
+        {
+          $set: {
+            flashSale,
+            saleStart: startDate,
+            saleEnd: endDate,
+          },
+        },
+        { returnDocument: 'after' }
+      );
 
+    return result
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+// const updateFalseSaleStatus = async (productId, falseSale, startDate, endDate) => {
+//   try {
+//     if (!ObjectId.isValid(productId)) {
+//       throw new Error("Invalid product ID");
+//     }
+
+//     const result = await GET_DB()
+//       .collection("products")
+//       .findOneAndUpdate(
+//         { _id: new ObjectId(productId) },
+//         {
+//           $set: {
+//             falseSale,
+//             saleStart: startDate,
+//             saleEnd: endDate,
+//           },
+//         },
+//         { returnDocument: "after" } // <-- đổi thành 'returnOriginal: false' nếu cần
+//       );
+
+//     if (!result.value) {
+//       throw new Error("Product not found");
+//     }
+
+//     return result.value;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 export const productModel = {
   PRODUCT,
   createAProduct, getProduct, deleteAProduct, updateAProduct,
-  findOneById
+  findOneById, updateFalseSaleStatus
 }

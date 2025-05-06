@@ -17,46 +17,40 @@ const createAProduct = async (req, res, next) => {
     res.status(400).json({ error: error.message });
   }
 }
-const getProduct = async (req, res, next) => {
-  try {
-    const result = await productServices.getProduct()
-    res.status(StatusCodes.OK).json(result)
-  } catch (error) {
-    next(error)
-  }
-}
-
-
-
-// const createNew = async (req, res, next) => {
+// const getProduct = async (req, res, next) => {
 //   try {
-//     const createdCard = await userService.createNew(req.body)
-//     res.status(StatusCodes.CREATED).json(createdCard)
+//     const result = await productServices.getProduct()
+//     res.status(StatusCodes.OK).json(result)
 //   } catch (error) {
 //     next(error)
-//     // console.log(error)
-//     // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-//     //   errors: error.message
-//     // })
 //   }
 // }
 
-// const updateAProduct = async (req, res, next) => {
+// const getProduct = async (req, res, next) => {
 //   try {
-//     const productId = req.params.id;
-//     const imageFiles = req.files; // ✅ lấy mảng ảnh
-//     const productData = req.body; // ✅ lấy các field: name, price, description,...
+//     const page = req.query.page ? parseInt(req.query.page) : null;
+//     const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
-//     console.log("BODY:", productData);
-//     console.log("FILES:", imageFiles);
-
-//     const updateProduct = await productServices.updateAProduct(productId, productData, imageFiles);
-
-//     res.status(201).json(updateProduct);
+//     const result = await productServices.getProduct(page, limit);
+//     res.status(StatusCodes.OK).json(result);
 //   } catch (error) {
 //     next(error);
 //   }
-// }
+// };
+const getProduct = async (req, res, next) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page) : null;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+    const category = req.query.category || null;
+
+    const result = await productServices.getProduct(page, limit, category);
+    res.status(StatusCodes.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const updateAProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
@@ -95,6 +89,64 @@ const deleteAProduct = async (req, res, next) => {
   }
 };
 
+
+// const updateFalseSaleStatus = async (req, res, next) => {
+//   try {
+//     const productId = req.params.id;
+//     const { flashSale } = req.body; // Trường falseSale là boolean (true hoặc false)
+
+//     // Kiểm tra xem trạng thái falseSale có hợp lệ không
+//     if (typeof flaseSale !== 'boolean') {
+//       return res.status(400).json({ error: "Invalid value for 'flaseSale'. It should be a boolean." });
+//     }
+
+//     const updatedProduct = await productServices.updateFalseSaleStatus(productId, flaseSale);
+
+//     // Nếu không tìm thấy sản phẩm
+//     if (!updatedProduct) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+
+//     // Trả về kết quả cập nhật
+//     res.status(200).json(updatedProduct);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+const updateFalseSaleStatus = async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const { flashSale } = req.body;
+
+    if (typeof flashSale !== 'object' || typeof flashSale.isActive !== 'boolean') {
+      return res.status(400).json({ error: "Invalid value for 'flashSale.isActive'. It should be a boolean." });
+    }
+
+
+    const startDate = new Date(flashSale.saleStart);
+    const endDate = new Date(flashSale.saleEnd);
+
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ error: "Invalid date format for 'start' or 'end'." });
+    }
+
+    // Gọi service để cập nhật trạng thái falseSale và thời gian
+    const updatedProduct = await productServices.updateFalseSaleStatus(productId, flashSale, startDate, endDate);
+
+    // Nếu không tìm thấy sản phẩm
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Trả về kết quả cập nhật
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    next(error); // Xử lý lỗi
+  }
+};
+
 export const productController = {
-  createAProduct, getProduct, updateAProduct, deleteAProduct
+  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus
 }

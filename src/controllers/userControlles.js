@@ -81,6 +81,8 @@ const update = async (req, res, next) => {
   try {
     const userId = req.jwtDecoded._id
     const userAvatarFile = req.file
+    console.log('reqBody nhận được:', req.body)  // Sửa ở đây
+
     console.log('userAvarFile', userAvatarFile)
     const updatedUser = await userServices.update(userId, req.body, userAvatarFile)
     res.status(StatusCodes.OK).json(updatedUser)

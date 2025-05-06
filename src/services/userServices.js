@@ -69,7 +69,7 @@ const register = async (reqBody) => {
     const newUser = {
       email: reqBody.email,
       password: bcryptjs.hashSync(reqBody.password, 8), //tham so thu 2 do phuc tap
-      name: nameFromEmail,
+      username: nameFromEmail,
       displayName: nameFromEmail,
       verifyToken: uuidv4()
     }

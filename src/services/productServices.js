@@ -40,14 +40,31 @@ const createAProduct = async (reqBody, userAvarFile) => {
   }
 };
 
-const getProduct = async (reqBody) => {
+// const getProduct = async (reqBody) => {
+//   try {
+//     const listProduct = await productModel.getProduct()
+//     return listProduct
+//   } catch (error) {
+//     throw error
+//   }
+// }
+// const getProduct = async (page, limit) => {
+//   try {
+//     const result = await productModel.getProduct(page, limit);
+//     return result;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+const getProduct = async (page, limit, category) => {
   try {
-    const listProduct = await productModel.getProduct()
-    return listProduct
+    return await productModel.getProduct(page, limit, category);
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
+
+
 const updateAProduct = async (id, reqBody, imageFiles) => {
   try {
     const updateData = { ...reqBody }; // khởi tạo dữ liệu update từ req.body
@@ -93,8 +110,18 @@ const deleteAProduct = async (idProduct) => {
     throw new Error(error.message);
   }
 };
+const updateFalseSaleStatus = async (productId, flashSale, startDate, endDate) => {
+  try {
+    // Gọi model để cập nhật trạng thái flaseSale và thời gian bắt đầu/kết thúc
+    const updatedProduct = await productModel.updateFalseSaleStatus(productId, flashSale, startDate, endDate);
+
+    return updatedProduct;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 export const productServices = {
-  createAProduct, getProduct, updateAProduct, deleteAProduct
+  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus
 }

@@ -12,7 +12,7 @@ const USER_COLLECTION_NAME = 'users'
 const USER_COLLECTION_SCHEMA = Joi.object({
   email: Joi.string().required().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE),
   password: Joi.string().required(),
-  name: Joi.string().required().trim().strict(),
+  username: Joi.string().required().trim().strict(),
   displayName: Joi.string().required().trim().strict(),
   avatar: Joi.string().default(null),
   role: Joi.string().valid(...Object.values(USER_ROLES)).default(USER_ROLES.CLIENT),
@@ -70,12 +70,20 @@ const update = async (userId, updateData) => {
         delete updateData[fieldName]
       }
     })
+    // Sau khi lọc field không hợp lệ
+    if (Object.keys(updateData).length === 0) {
+      console.log('updateData sau lọc không còn field hợp lệ');
+      return null
+    }
+
     const result = await GET_DB().collection(USER_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(userId) },
       { $set: updateData },
-      { returnDocument: 'after' }
+      { returnOriginal: false } // tương thích v3.x trở xuống
+
     )
-    return result.value
+    console.log('result', result)
+    return result
   } catch (error) {
     throw new Error(error)
   }

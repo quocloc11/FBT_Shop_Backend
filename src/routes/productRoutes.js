@@ -26,6 +26,8 @@ Router.route('/products/:id')
 
   .delete(authMiddleware.isAuthorized, productController.deleteAProduct)
 
+Router.route('/products/:id/flash-sales')
+  .put(authMiddleware.isAuthorized, productController.updateFalseSaleStatus);
 
 
 export const productRoute = Router
