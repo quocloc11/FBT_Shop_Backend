@@ -146,7 +146,17 @@ const updateFalseSaleStatus = async (req, res, next) => {
     next(error); // Xử lý lỗi
   }
 };
+const suggestSearch = async (req, res, next) => {
+  try {
+    const keyword = req.query.keyword || '';
+    const suggestions = await productServices.suggestSearch(keyword);
+    res.status(200).json(suggestions);
+  } catch (error) {
+    next(error);  // Gửi lỗi tới middleware xử lý lỗi
+  }
+};
+
 
 export const productController = {
-  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus
+  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus, suggestSearch
 }

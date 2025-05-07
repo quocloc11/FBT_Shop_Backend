@@ -303,8 +303,37 @@ const updateFalseSaleStatus = async (productId, flashSale, startDate, endDate) =
 //     throw new Error(error.message);
 //   }
 // };
+const suggestSearch = async (keyword) => {
+  try {
+    const collection = GET_DB().collection("products");  // Truy cập vào collection sản phẩm trong DB
+    const query = keyword
+      ? { name: { $regex: keyword, $options: 'i' } }  // Tìm kiếm không phân biệt hoa thường
+      : {};  // Nếu không có keyword, trả về tất cả sản phẩm
+
+    const projection = {
+      _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
+      description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
+      flashSale: 1, saleStart: 1, saleEnd: 1
+    };
+
+    // Lấy các sản phẩm gợi ý
+    const productSuggestions = await collection.find(query, { projection }).limit(5).toArray();
+
+    // Lấy các từ khóa gợi ý (có thể mở rộng thêm theo cách khác)
+    const keywordSuggestions = await collection.find(
+      { name: { $regex: keyword, $options: 'i' } },
+      { projection }
+    ).limit(5).toArray();
+
+    return { keywords: keywordSuggestions, products: productSuggestions };
+  } catch (error) {
+    throw new Error('Truy vấn dữ liệu thất bại: ' + error.message);
+  }
+};
+
+
 export const productModel = {
   PRODUCT,
   createAProduct, getProduct, deleteAProduct, updateAProduct,
-  findOneById, updateFalseSaleStatus
+  findOneById, updateFalseSaleStatus, suggestSearch
 }

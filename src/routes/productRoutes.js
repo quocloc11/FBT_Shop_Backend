@@ -29,6 +29,8 @@ Router.route('/products/:id')
 Router.route('/products/:id/flash-sales')
   .put(authMiddleware.isAuthorized, productController.updateFalseSaleStatus);
 
+Router.get('/products/search', productController.suggestSearch);
+
 
 export const productRoute = Router
 

@@ -121,7 +121,16 @@ const updateFalseSaleStatus = async (productId, flashSale, startDate, endDate) =
   }
 };
 
+const suggestSearch = async (keyword) => {
+  try {
+    const suggestions = await productModel.suggestSearch(keyword);
+    return suggestions;
+  } catch (error) {
+    throw new Error('Có lỗi khi tìm kiếm gợi ý: ' + error.message);
+  }
+};
+
 
 export const productServices = {
-  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus
+  createAProduct, getProduct, updateAProduct, deleteAProduct, updateFalseSaleStatus, suggestSearch
 }
