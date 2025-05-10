@@ -2,44 +2,46 @@ import { cartModel } from "../models/cartModel.js";
 
 // Thêm sản phẩm vào giỏ hàng
 const addItemToCart = async (userId, item) => {
-  console.log('item', item);
-
-  if (!item || !item.name) {
+  if (!item || !item.productId) {
     throw new Error("Thiếu thông tin sản phẩm.");
   }
 
-  // Nếu không có `productId`, tạo `productId` từ `name` hoặc `id`
-  let productId = item.productId || item.name;  // Sử dụng `name` làm `productId` nếu không có
+  // ✅ Chuyển images thành mảng nếu nó là string
+  if (item.images && typeof item.images === 'string') {
+    item.images = [item.images];
+  }
 
-  // Tìm giỏ hàng của user
   let cart = await cartModel.findCartByUserId(userId);
 
+
   if (!cart) {
-    // Nếu chưa có thì tạo mới
-    cart = await cartModel.createCart({
+    // Nếu chưa có giỏ thì tạo mới
+    await cartModel.createCart({
       userId,
-      items: [{ ...item, productId }], // Dùng `productId` đã tạo
+      items: [item]
     });
+    cart = await cartModel.findCartByUserId(userId);
   } else {
     // Kiểm tra sản phẩm đã có chưa
-    const existingItem = cart.items.find(
-      (i) => i.productId.toString() === productId.toString()
+    const existingIndex = cart.items.findIndex(
+      (i) => i.productId.toString() === item.productId.toString()
     );
 
-    if (existingItem) {
+    if (existingIndex !== -1) {
       // Nếu đã có thì tăng số lượng
-      existingItem.quantity += item.quantity;
+      cart.items[existingIndex].quantity += item.quantity;
     } else {
       // Nếu chưa có thì thêm sản phẩm vào giỏ
-      cart.items.push({ ...item, productId });
+      cart.items.push(item);
     }
 
     // Cập nhật giỏ hàng
-    cart = await cartModel.updateCart(userId, cart);
+    await cartModel.updateCart(userId, { items: cart.items });
   }
 
-  return cart;
+  return await cartModel.findCartByUserId(userId);
 };
+
 
 
 // Lấy thông tin giỏ hàng của user
@@ -54,8 +56,12 @@ const removeItemFromCart = async (userId, productId) => {
   if (!removed) {
     throw new Error('Không tìm thấy sản phẩm trong giỏ để xóa.');
   }
-  return true;
+
+  // ✅ Trả về giỏ hàng mới sau khi xóa
+  const updatedCart = await cartModel.findCartByUserId(userId);
+  return updatedCart;
 };
+
 
 // Export các hàm thao tác với giỏ hàng
 export const cartService = {

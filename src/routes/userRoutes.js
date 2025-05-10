@@ -39,7 +39,7 @@ Router.get('/dashboard', authMiddleware.isAuthorized, authMiddleware.isAdmin, (r
 })
 
 Router.route('/users')
-  .get(authMiddleware.isAuthorized, userController.getAllUsers);
+  .get(authMiddleware.isAuthorized, authMiddleware.isAdmin, userController.getAllUsers);
 
 Router.route('/users/:id')
   .patch(
@@ -51,6 +51,7 @@ Router.route('/users/:id')
 Router.route('/users/:id')
   .delete(
     authMiddleware.isAuthorized,
+    authMiddleware.isAdmin,
     userController.deleteUser
   )
 

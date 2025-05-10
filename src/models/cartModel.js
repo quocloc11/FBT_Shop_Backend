@@ -14,6 +14,8 @@ const CART = Joi.object({
       quantity: Joi.number().required().min(1),
       name: Joi.string().optional(),
       price: Joi.number().optional(),
+      originalPrice: Joi.number().optional(),  // ✅ Thêm dòng này
+      promotion: Joi.string().optional(),      // ✅ Thêm dòng này
       avatar: Joi.string().default(null),
       images: Joi.array().items(Joi.string()).optional()  // <<< thêm dòng này
     })
@@ -113,11 +115,15 @@ const removeItemFromCart = async (userId, productId) => {
       }
     );
 
-    return result.modifiedCount > 0;
+    if (result.modifiedCount === 0) {
+      return false;  // Trả về false nếu không có sản phẩm nào bị xóa
+    }
+    return true; // Trả về true nếu thành công
   } catch (error) {
     throw new Error('Lỗi khi xóa sản phẩm khỏi giỏ: ' + error.message);
   }
 };
+
 
 // Export các hàm thao tác với giỏ hàng
 export const cartModel = {

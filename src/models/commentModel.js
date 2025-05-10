@@ -9,6 +9,7 @@ const COMMENT_SCHEMA = Joi.object({
   productId: Joi.string().required(),
   userId: Joi.string().required(),
   username: Joi.string().required(),
+  rating: Joi.number().min(1).max(5).required(),
   content: Joi.string().required().trim(),
   images: Joi.array().items(Joi.string().uri()).default([]),
   createdAt: Joi.date().timestamp('javascript').default(() => new Date()),  // Ngày hiện tại nếu không có

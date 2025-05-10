@@ -9,6 +9,7 @@ const ORDER_COLLECTION_NAME = 'orders';
 const ORDER = Joi.object({
   customerName: Joi.string().required(),
   phoneNumber: Joi.string().required(),
+  paymentMethod: Joi.string().valid('cod', 'bank', 'zalopay', 'momo').required(),
   items: Joi.array().items(
     Joi.object({
       productId: Joi.string().required(),

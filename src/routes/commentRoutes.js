@@ -9,6 +9,6 @@ Router.route('/comments/:productId')
   .get(commentController.getCommentsByProduct)
 
 Router.route('/comments/:productId/:commentId')
-  .delete(authMiddleware.isAuthorized, commentController.deleteComment)
+  .delete(authMiddleware.isAuthorized, authMiddleware.isAdmin, commentController.deleteComment)
 
 export const commentRoute = Router

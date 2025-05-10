@@ -4,17 +4,6 @@ import { CloudinaryProvider } from "../provider/CloudinaryProvider.js";
 import ApiError from '../utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
 import { pickUser } from '../utils/formatters.js'
-// const createAProduct = async (reqBody) => {
-//   try {
-//     const newProduct = {
-//       ...reqBody
-//     }
-//     const createdUser = await productModel.createAProduct(newProduct)
-//     return createdUser
-//   } catch (error) {
-//     throw error
-//   }
-// }
 
 const createAProduct = async (reqBody, userAvarFile) => {
   try {
@@ -40,22 +29,7 @@ const createAProduct = async (reqBody, userAvarFile) => {
   }
 };
 
-// const getProduct = async (reqBody) => {
-//   try {
-//     const listProduct = await productModel.getProduct()
-//     return listProduct
-//   } catch (error) {
-//     throw error
-//   }
-// }
-// const getProduct = async (page, limit) => {
-//   try {
-//     const result = await productModel.getProduct(page, limit);
-//     return result;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+
 const getProduct = async (page, limit, category) => {
   try {
     return await productModel.getProduct(page, limit, category);
@@ -98,10 +72,10 @@ const deleteAProduct = async (idProduct) => {
     }
 
     // Kiểm tra xem sản phẩm có tồn tại không
-    // const product = await productModel.findOneById(idProduct);
-    // if (!product) {
-    //   throw new Error("Product not found");
-    // }
+    const product = await productModel.findOneById(idProduct);
+    if (!product) {
+      throw new Error("Product not found");
+    }
 
     // Tiến hành xóa sản phẩm
     const deletedProduct = await productModel.deleteAProduct(idProduct);

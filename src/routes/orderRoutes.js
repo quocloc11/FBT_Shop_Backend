@@ -9,10 +9,10 @@ Router.route('/order')
   .get(authMiddleware.isAuthorized, orderController.getAllOrders);
 
 Router.route('/order/:id')
-  .delete(authMiddleware.isAuthorized, orderController.deleteOrder)
-  .get(authMiddleware.isAuthorized, orderController.getOrderById);
+  .delete(authMiddleware.isAuthorized, authMiddleware.isAdmin, orderController.deleteOrder)
+  .get(authMiddleware.isAuthorized, authMiddleware.isAdmin, orderController.getOrderById);
 
 Router.route('/order/:id/status')
-  .patch(authMiddleware.isAuthorized, orderController.updateStatus);
+  .patch(authMiddleware.isAuthorized, authMiddleware.isAdmin, orderController.updateStatus);
 
 export const orderRoute = Router;

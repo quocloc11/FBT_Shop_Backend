@@ -41,6 +41,7 @@ const PRODUCT = Joi.object({
   // Đánh giá sản phẩm, mặc định là 0
   rating: Joi.number().min(0).max(5).default(0),
 
+  discountPrice: Joi.number().min(0).optional(),
   // Số lượng đã bán, mặc định là 0
   sold: Joi.number().default(0),
 
@@ -124,69 +125,6 @@ const findOneById = async (Id) => {
   }
 }
 
-
-// const getProduct = async () => {
-//   try {
-//     const products = await GET_DB().collection("products")
-//       .find({}, {
-//         projection: {
-//           _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
-//           description: 1,
-//           specs: 1, video: 1,
-//           promotion: 1, images: 1, brand: 1,
-//           flashSale: 1,     // Kiểm tra trường flashSale có trong cơ sở dữ liệu
-//           saleStart: 1,     // Thay saleStart thay cho startTime
-//           saleEnd: 1
-//         }
-//       })
-//       .toArray();
-//     if (!products) throw new Error("Product not found");
-//     return products;
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
-
-// const getProduct = async (page, limit) => {
-//   try {
-//     const collection = GET_DB().collection("products");
-
-//     const query = {};
-//     const projection = {
-//       _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
-//       description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
-//       flashSale: 1, saleStart: 1, saleEnd: 1
-//     };
-
-//     const totalItems = await collection.countDocuments(query);
-
-//     let cursor = collection.find(query, { projection });
-
-//     // Nếu có page và limit thì áp dụng phân trang
-//     if (page && limit) {
-//       const skip = (page - 1) * limit;
-//       cursor = cursor.skip(skip).limit(limit);
-
-//       const products = await cursor.toArray();
-
-//       return {
-//         currentPage: page,
-//         totalPages: Math.ceil(totalItems / limit),
-//         totalItems,
-//         products
-//       };
-//     }
-
-//     // Nếu không có phân trang, trả về toàn bộ
-//     const allProducts = await cursor.toArray();
-//     return {
-//       totalItems,
-//       products: allProducts
-//     };
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
 const getProduct = async (page, limit, category) => {
   try {
     const collection = GET_DB().collection("products");
@@ -196,7 +134,7 @@ const getProduct = async (page, limit, category) => {
     const projection = {
       _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
       description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
-      flashSale: 1, saleStart: 1, saleEnd: 1
+      flashSale: 1, saleStart: 1, saleEnd: 1, discountPrice: 1
     };
 
     const totalItems = await collection.countDocuments(query);
@@ -228,7 +166,6 @@ const getProduct = async (page, limit, category) => {
 };
 
 const updateAProduct = async (id, data) => {
-  console.log(data)
   try {
     const result = await GET_DB().collection("products").findOneAndUpdate(
       { _id: new ObjectId(id) },
@@ -274,35 +211,6 @@ const updateFalseSaleStatus = async (productId, flashSale, startDate, endDate) =
     throw new Error(error.message);
   }
 };
-// const updateFalseSaleStatus = async (productId, falseSale, startDate, endDate) => {
-//   try {
-//     if (!ObjectId.isValid(productId)) {
-//       throw new Error("Invalid product ID");
-//     }
-
-//     const result = await GET_DB()
-//       .collection("products")
-//       .findOneAndUpdate(
-//         { _id: new ObjectId(productId) },
-//         {
-//           $set: {
-//             falseSale,
-//             saleStart: startDate,
-//             saleEnd: endDate,
-//           },
-//         },
-//         { returnDocument: "after" } // <-- đổi thành 'returnOriginal: false' nếu cần
-//       );
-
-//     if (!result.value) {
-//       throw new Error("Product not found");
-//     }
-
-//     return result.value;
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
 const suggestSearch = async (keyword) => {
   try {
     const collection = GET_DB().collection("products");  // Truy cập vào collection sản phẩm trong DB

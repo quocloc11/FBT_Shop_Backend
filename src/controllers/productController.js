@@ -12,31 +12,12 @@ const createAProduct = async (req, res, next) => {
     const productAvatarFile = req.file
     console.log('productAvatarFile', productAvatarFile)
     const product = await productServices.createAProduct(req.body, productAvatarFile);
-    res.status(201).json(product);  // Trả về toàn bộ sản phẩm thay vì chỉ `insertedId`
+    res.status(201).json(product);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 }
-// const getProduct = async (req, res, next) => {
-//   try {
-//     const result = await productServices.getProduct()
-//     res.status(StatusCodes.OK).json(result)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
 
-// const getProduct = async (req, res, next) => {
-//   try {
-//     const page = req.query.page ? parseInt(req.query.page) : null;
-//     const limit = req.query.limit ? parseInt(req.query.limit) : null;
-
-//     const result = await productServices.getProduct(page, limit);
-//     res.status(StatusCodes.OK).json(result);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 const getProduct = async (req, res, next) => {
   try {
     const page = req.query.page ? parseInt(req.query.page) : null;
@@ -63,6 +44,7 @@ const updateAProduct = async (req, res, next) => {
       stock: Number(body.stock),
       quantity: Number(body.quantity),
       sold: Number(body.sold || 0),
+      discountPrice: Number(body.discountPrice),
       rating: Number(body.rating || 0),
     };
 
@@ -89,30 +71,6 @@ const deleteAProduct = async (req, res, next) => {
   }
 };
 
-
-// const updateFalseSaleStatus = async (req, res, next) => {
-//   try {
-//     const productId = req.params.id;
-//     const { flashSale } = req.body; // Trường falseSale là boolean (true hoặc false)
-
-//     // Kiểm tra xem trạng thái falseSale có hợp lệ không
-//     if (typeof flaseSale !== 'boolean') {
-//       return res.status(400).json({ error: "Invalid value for 'flaseSale'. It should be a boolean." });
-//     }
-
-//     const updatedProduct = await productServices.updateFalseSaleStatus(productId, flaseSale);
-
-//     // Nếu không tìm thấy sản phẩm
-//     if (!updatedProduct) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     // Trả về kết quả cập nhật
-//     res.status(200).json(updatedProduct);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 const updateFalseSaleStatus = async (req, res, next) => {
   try {

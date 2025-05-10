@@ -3,17 +3,21 @@ import { StatusCodes } from 'http-status-codes'
 
 const addComment = async (req, res, next) => {
   try {
-    const { productId } = req.params
+    const { productId } = req.params;
     const user = req.jwtDecoded;
-    console.log('user', user)
-    const { content } = req.body
+    const { content, rating } = req.body; // Thêm trường rating
 
-    const comment = await commentService.addComment(productId, user, content)
-    res.status(StatusCodes.CREATED).json(comment)
+    if (rating === undefined || rating === null) {
+      return res.status(400).json({ error: 'Rating is required' });
+    }
+
+    const comment = await commentService.addComment(productId, user, content, rating); // Chuyển rating vào service
+    res.status(StatusCodes.CREATED).json(comment);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
+
 
 const getCommentsByProduct = async (req, res, next) => {
   try {

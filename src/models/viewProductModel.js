@@ -53,19 +53,6 @@ const PRODUCT = Joi.object({
 });
 
 
-// const viewedProductSchema = new mongoose.Schema({
-//   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-//   product: {
-//     _id: String,
-//     name: String,
-//     image: String,
-//     price: Number,
-//     category: String,
-//     brand: String,
-//   },
-//   viewedAt: { type: Date, default: Date.now },
-// });
-
 
 // Lưu sản phẩm đã xem
 const isProductViewed = async (userId, productId) => {

@@ -1,19 +1,21 @@
 import { ObjectId } from 'mongodb'
 import { commentModel } from '../models/commentModel.js'
 
-const addComment = async (productId, user, content) => {
+const addComment = async (productId, user, content, rating) => {
   const comment = {
     _id: new ObjectId(),
     productId,
     userId: user._id.toString(),
     username: user.email || 'Anonymous',
     content,
+    rating, // Thêm rating vào comment
     createdAt: new Date(),
-    updatedAt: new Date(),  // Đảm bảo là một giá trị ngày hợp lệ
+    updatedAt: new Date(),
     images: []
   }
-  return await commentModel.createAComment(comment)
+  return await commentModel.createAComment(comment);
 }
+
 
 const getCommentsByProduct = async (productId) => {
   return await commentModel.getCommentsByProductId(productId)

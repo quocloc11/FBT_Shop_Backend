@@ -22,12 +22,13 @@ Router.route('/products/:id')
   .put(
     authMiddleware.isAuthorized,
     multerUploadMiddlere.upload.array('images'), // 👈 đổi single -> array
+    authMiddleware.isAdmin,
     productController.updateAProduct)
 
   .delete(authMiddleware.isAuthorized, productController.deleteAProduct)
 
 Router.route('/products/:id/flash-sales')
-  .put(authMiddleware.isAuthorized, productController.updateFalseSaleStatus);
+  .put(authMiddleware.isAuthorized, authMiddleware.isAdmin, productController.updateFalseSaleStatus);
 
 Router.get('/products/search', productController.suggestSearch);
 
