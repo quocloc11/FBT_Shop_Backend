@@ -15,7 +15,7 @@ Router.route('/products')
   .post(authMiddleware.isAuthorized,
     multerUploadMiddlere.upload.single('images'),
     productController.createAProduct)
-  .get(authMiddleware.isAuthorized, productController.getProduct)
+  .get(productController.getProduct)
 
 
 Router.route('/products/:id')

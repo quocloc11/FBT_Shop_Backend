@@ -221,7 +221,7 @@ const suggestSearch = async (keyword) => {
     const projection = {
       _id: 1, name: 1, price: 1, quantity: 1, image: 1, category: 1, stock: 1, sold: 1,
       description: 1, specs: 1, video: 1, promotion: 1, images: 1, brand: 1,
-      flashSale: 1, saleStart: 1, saleEnd: 1
+      flashSale: 1, saleStart: 1, saleEnd: 1, discountPrice: 1
     };
 
     // Lấy các sản phẩm gợi ý
