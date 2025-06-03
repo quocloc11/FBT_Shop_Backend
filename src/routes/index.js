@@ -4,7 +4,7 @@ import { userRoute } from './userRoutes.js'
 import { productRoute } from './productRoutes.js'
 import { viewProductRoute } from './viewedProductRoute.js'
 import { cartRoute } from './cartRoutes.js'
-import { orderRoute } from './OrderRoutes.js'
+import { orderRoute } from './orderRoutes.js'
 import { commentRoute } from './commentRoutes.js'
 
 
