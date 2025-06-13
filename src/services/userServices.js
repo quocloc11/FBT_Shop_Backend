@@ -74,28 +74,6 @@ const register = async (reqBody) => {
       verifyToken: uuidv4()
     }
     const createdUser = await userModel.register(newUser)
-    //if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found')
-    // if (!existUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active')
-    // if (!bcryptjs.compareSync(reqBody.password, existUser.password)) {
-    //   throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your Email or Password is incorrect!')
-    // }
-    // const userInfo = {
-    //   _id: existUser._id,
-    //   email: existUser.email
-    // }
-    // const accessToken = await JwtProvider.generateToken(
-    //   userInfo,
-    //   env.ACCESS_TOKEN_SECRET_SIGNATURE,
-    //   env.ACCESS_TOKEN_LIFE
-    // )
-
-    // const refreshToken = await JwtProvider.generateToken(
-    //   userInfo,
-    //   env.REFRESH_TOKEN_SECRET_SIGNATURE,
-    //   env.REFRESH_TOKEN_LIFE
-    // )
-
-    //return { accessToken, refreshToken, ...pickUser(existUser) }
     return createdUser
   } catch (error) {
     throw error
