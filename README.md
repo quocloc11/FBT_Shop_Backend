@@ -10,6 +10,7 @@ To start the application run the below command
 ```sh
 npm run dev
 ```
+
 user
 Tài khoản :loc842211@gmail.com Mật Khẩu :112233A@
 admin
